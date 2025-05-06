@@ -1,0 +1,16 @@
+[project]
+name = "digit-classification"
+version = "0.1.0"
+description = "Digit classification CLI with PyTorch Lightning and MLflow"
+authors = [{name="Your Name", email="you@example.com"}]
+dependencies = [
+    "torch",
+    "torchvision",
+    "lightning",
+    "mlflow",
+    "typer[all]",
+    "scikit-learn"
+]
+
+[project.scripts]
+digit-classification = "digital_classification.cli:app"
