@@ -1,0 +1,6 @@
+torch
+torchvision
+lightning
+mlflow
+typer[all]
+scikit-learn

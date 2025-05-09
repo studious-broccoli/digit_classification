@@ -1,0 +1,11 @@
+Metadata-Version: 2.4
+Name: digit_classification
+Version: 0.1.0
+Summary: Digit classification CLI with PyTorch Lightning
+Author-email: Arianna Kernosek <ariannakernosek@gmail.com>
+Requires-Dist: torch
+Requires-Dist: torchvision
+Requires-Dist: lightning
+Requires-Dist: mlflow
+Requires-Dist: typer[all]
+Requires-Dist: scikit-learn

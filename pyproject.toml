@@ -1,16 +1,29 @@
 [project]
 name = "digit-classification"
 version = "0.1.0"
-description = "Digit classification CLI with PyTorch Lightning and MLflow"
-authors = [{name="Your Name", email="you@example.com"}]
+description = "Digit Classification Buzz Solutions."
+readme = "README.md"
+authors = [
+  { name = "Arianna Kernosek", email = "ariannakernosek@gmail.com" }
+]
+requires-python = ">=3.9"
+
 dependencies = [
-    "torch",
-    "torchvision",
-    "lightning",
-    "mlflow",
-    "typer[all]",
-    "scikit-learn"
+  "lightning>=2.5.0.post0",
+  "torch>=2.0.0",
+  "torchvision>=0.15.0",
+  "typer>=0.15.0",
+]
+
+[project.optional-dependencies]
+test = [
+  "pytest>=8.0.0",
+  "pytest-cov>=6.0.0",
 ]
 
 [project.scripts]
-digit-classification = "digital_classification.cli:app"
+digit-classification = "digit_classification.cli:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
