@@ -26,7 +26,7 @@ def train_model(data_dir="data", output_dir="checkpoints", epochs=20):
     SMTP_PORT = config.get("SMTP_PORT", "")
 
     # === Load Data ===
-    train_loader, val_loader, test_loader = get_dataloaders(data_dir)
+    train_loader, val_loader = get_dataloaders(data_dir)
 
     # === Model ===
     input_dim = 28 * 28
@@ -35,7 +35,6 @@ def train_model(data_dir="data", output_dir="checkpoints", epochs=20):
 
     # === Callbacks ===
     lr_monitor = LearningRateMonitor(logging_interval='epoch')
-    # checkpoint_callback = ModelCheckpoint(dirpath=output_dir, every_n_epochs=2, save_top_k=-1)
     checkpoint_callback = ModelCheckpoint(every_n_epochs=2, save_top_k=-1)
     early_stop_callback = EarlyStopping(monitor="val_loss", patience=5, mode="min", verbose=True)
 

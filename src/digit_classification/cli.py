@@ -1,5 +1,5 @@
 import typer
-from digit_classification import data, train as training_module, evaluation
+from digit_classification import data, train as training_module, evaluate as evaluation_module, predict as predict_module
 
 app = typer.Typer()
 
@@ -33,7 +33,7 @@ def evaluate(
     data_dir: str = typer.Option(..., "--data-dir", help="Path to evaluation data")
 ):
     typer.echo(f"Evaluating model from checkpoint {checkpoint_path}...")
-    evaluation.evaluate_model(checkpoint_path=checkpoint_path, data_dir=data_dir)
+    evaluation_module.evaluate_model(checkpoint_path=checkpoint_path, data_dir=data_dir)
     typer.echo("Evaluation complete.")
 
 
@@ -44,7 +44,7 @@ def predict(
     input_path: str = typer.Option(..., "--input-path", help="Path to input image or data")
 ):
     typer.echo(f"Making prediction on input from {input_path}...")
-    result = evaluation.predict_from_checkpoint(checkpoint_path=checkpoint_path, input_path=input_path)
+    result = predict_module.predict_from_checkpoint(checkpoint_path=checkpoint_path, input_path=input_path)
     typer.echo(f"Prediction result: {result}")
 
 

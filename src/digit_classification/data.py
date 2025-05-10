@@ -13,6 +13,7 @@ transform = transforms.Compose([
     transforms.Normalize((0.1307,), (0.3081,))
 ])
 
+
 # Get indices for desired label counts
 def get_label_indices(targets, label, count):
     indices = (targets == label).nonzero(as_tuple=True)[0]
@@ -48,6 +49,10 @@ def get_dataloaders(data_dir="data"):
     train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True, num_workers=NUM_WORKERS)
     val_loader = DataLoader(val_dataset, batch_size=64, shuffle=False, num_workers=NUM_WORKERS)
 
+    return train_loader, val_loader
+
+
+def get_testloader(data_dir="data"):
     # Load test dataset
     full_test_dataset = datasets.MNIST(root=data_dir, train=False, download=True, transform=transform)
     test_targets = full_test_dataset.targets
@@ -58,8 +63,7 @@ def get_dataloaders(data_dir="data"):
     # Create subset and DataLoader
     test_dataset = Subset(full_test_dataset, test_indices)
     test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False, num_workers=NUM_WORKERS)
-
-    return train_loader, val_loader, test_loader
+    return test_loader
 
 
 def download_mnist(data_dir: str):
