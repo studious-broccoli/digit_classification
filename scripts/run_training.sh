@@ -1,11 +1,7 @@
 # Download data
-python src/cli.py download-data --data-dir ./data
+python src/digit_classification/cli.py download-data --data-dir data/MNIST
 
 # Train model
-python src/cli.py train --data-dir ./data --output-dir ./models --model-name resnet18 --epochs 10
+python src/digit_classification/cli.py train --data-dir data/MNIST --output-dir checkpoints --epochs 20
 
-# Evaluate model
-python src/cli.py evaluate --checkpoint-path ./models/resnet18.pt --data-dir ./data --model-name resnet18
-
-# Predict
-python src/cli.py predict --checkpoint-path ./models/resnet18.pt --input-path ./test_digit.png --model-name resnet18
+#!/bin/bash

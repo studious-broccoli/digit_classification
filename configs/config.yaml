@@ -1,6 +1,6 @@
 batch_size: 32
 learning_rate: 0.001
-max_epochs: 20
+max_epochs: 2
 
 load_from_ckpt: False
 

@@ -30,6 +30,7 @@ class DigitClassifier(LightningModule):
 
     def training_step(self, batch, batch_idx):
         x, y = batch
+        x = x.view(x.size(0), -1)  # flatten the input
         logits = self(x)
         loss = F.cross_entropy(logits, y)
         self.train_accuracy(logits, y)
@@ -39,6 +40,7 @@ class DigitClassifier(LightningModule):
 
     def validation_step(self, batch, batch_idx):
         x, y = batch
+        x = x.view(x.size(0), -1)  # flatten the input
         logits = self(x)
         loss = F.cross_entropy(logits, y)
         self.val_accuracy(logits, y)

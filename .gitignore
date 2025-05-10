@@ -1,3 +1,6 @@
 data/
 .idea/
+checkpoints/
+tests/__pycache__/
+makefile
 src/digit_classification/models/__pycache__/

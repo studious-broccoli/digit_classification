@@ -1,0 +1,1 @@
+# Predict the digit label of an image.
