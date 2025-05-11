@@ -51,9 +51,6 @@ def get_latest_ckpt(logs_path: str = "./lightning_logs/version*"):
                     latest_ckpt_dir = log_dir
                     latest_ckpts = checkpoints[0]
                     break
-
-    print(f"\n📨 Loading: {latest_ckpt_dir}")
-    print(f"📨 Loading: {latest_ckpts}")
     return latest_ckpts
 
 

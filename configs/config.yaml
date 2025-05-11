@@ -1,16 +1,23 @@
-batch_size: 32
-learning_rate: 0.001
-max_epochs: 2
+# Data Connfiguration
+num_workers: 0
 
 # Model Configuration
-INPUT_DIM: 784
-NUM_CLASSES: 3
+input_dim: 784
+num_classes: 3
 
-# Mappings
+# Training Parameters
+batch_size: 32
+learning_rate: 0.001
+max_epochs: 20
+load_from_ckpt: False
+
+# Label Mappings
 label_map: {0: 0, 5: 1, 8: 2}
 label_map_reverse: {0: 0, 1: 5, 2: 8}
 
-load_from_ckpt: False
+# Test Configuration
+data_dir: "data/MNIST"
+output_dir: "checkpoints"
 
 # Email configuration
 EMAIL_ADDRESS: 'ariannampryor@gmail.com'

@@ -7,11 +7,9 @@ import torch
 import random
 import numpy as np
 
-# Add Random Seed for Reprodiblity
+from digit_classification.utils.utils import load_config
+from digit_classification.transforms import data_transform
 
-import os
-NUM_WORKERS = 0  #min(2, os.cpu_count() or 1)  # Safe for macOS
-label_map = {0: 0, 5: 1, 8: 2}
 
 def set_seed(seed=42):
     random.seed(seed)
@@ -22,15 +20,6 @@ def set_seed(seed=42):
     # For determinism in convolutional algorithms
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
-
-# Set the seed at the start
-set_seed(42)
-
-# Define transform
-transform = transforms.Compose([
-    transforms.ToTensor(),
-    transforms.Normalize((0.1307,), (0.3081,))
-])
 
 
 # Get indices for desired label counts
@@ -51,14 +40,18 @@ class MappedSubset(Dataset):
         x, y = self.subset[idx]
         return x, self.label_map[int(y)]
 
-    # def __getitem__(self, idx):
-    #     x, y = self.subset[idx]
-    #     return x, self.label_map[y.item()]
-
 
 def get_dataloaders(data_dir="data"):
+    # Set the seed at the start
+    set_seed(42)
+
+    config = load_config()
+    num_workers = config["num_workers"]
+    label_map = config["label_map"]
+    batch_size = config["batch_size"]
+
     # Load full MNIST dataset
-    mnist_dataset = datasets.MNIST(root=data_dir, train=True, download=True, transform=transform)
+    mnist_dataset = datasets.MNIST(root=data_dir, train=True, download=True, transform=data_transform)
     print("MNIST Dataset Shape =", mnist_dataset.data.shape)
     print(Counter(mnist_dataset.targets.tolist()))
 
@@ -83,16 +76,27 @@ def get_dataloaders(data_dir="data"):
     val_size = len(mapped_dataset) - train_size
     train_dataset, val_dataset = random_split(mapped_dataset, [train_size, val_size])
 
+    print("Train Dataset Size =", len(train_dataset))
+    print("Validation Dataset Size =", len(val_dataset))
+
     # DataLoaders
-    train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True, num_workers=NUM_WORKERS)
-    val_loader = DataLoader(val_dataset, batch_size=64, shuffle=False, num_workers=NUM_WORKERS)
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers)
+    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
 
     return train_loader, val_loader
 
 
 def get_testloader(data_dir="data"):
+    config = load_config()
+    num_workers = config["num_workers"]
+    label_map = config["label_map"]
+    batch_size = config["batch_size"]
+
+    # Set the seed at the start
+    set_seed(42)
+
     # Load test dataset
-    full_test_dataset = datasets.MNIST(root=data_dir, train=False, download=True, transform=transform)
+    full_test_dataset = datasets.MNIST(root=data_dir, train=False, download=True, transform=data_transform)
     test_targets = full_test_dataset.targets
 
     # Filter test indices for labels 0, 5, 8
@@ -101,7 +105,9 @@ def get_testloader(data_dir="data"):
     # Create subset and DataLoader
     test_dataset = Subset(full_test_dataset, test_indices)
     mapped_dataset = MappedSubset(test_dataset, label_map)
-    test_loader = DataLoader(mapped_dataset, batch_size=64, shuffle=False, num_workers=NUM_WORKERS)
+    print("Test Dataset Size =", len(mapped_dataset))
+
+    test_loader = DataLoader(mapped_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
     return test_loader
 
 

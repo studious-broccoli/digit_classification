@@ -2,12 +2,11 @@ import torch
 from digit_classification.models.cnn import DigitClassifier
 from digit_classification.utils.utils import load_config
 
-config = load_config()
-
 def test_model_forward_pass():
-    input_dim = config["INPUT_DIM"]
-    batch_size = config["BATCH_SIZE"]
-    num_classes = config["NUM_CLASSES"]
+    config = load_config()
+    input_dim = config["input_dim"]
+    batch_size = config["batch_size"]
+    num_classes = config["num_classes"]
 
     model = DigitClassifier(input_dim=input_dim, num_classes=num_classes)
     dummy_input = torch.randn(batch_size, input_dim)

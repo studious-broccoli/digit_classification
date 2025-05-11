@@ -4,3 +4,5 @@ checkpoints/
 tests/__pycache__/
 makefile
 src/digit_classification/models/__pycache__/
+*.pyc
+__pycache__/

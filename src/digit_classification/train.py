@@ -1,12 +1,10 @@
-# python src/digit_classification/cli.py train --data-dir data/MNIST --output-dir checkpoints --epochs 10
-
 from datetime import datetime
 import torch
 from lightning.pytorch import Trainer
 from lightning.pytorch.callbacks import ModelCheckpoint, LearningRateMonitor, EarlyStopping
 
 from digit_classification.models.cnn import DigitClassifier
-from digit_classification.utils.model_utils import send_error_email, get_latest_ckpt, get_input_dim_num_classes
+from digit_classification.utils.model_utils import send_error_email, get_latest_ckpt
 from digit_classification.utils.utils import load_config
 from digit_classification.data import get_dataloaders
 
@@ -17,9 +15,12 @@ def train_model(data_dir="data", output_dir="checkpoints", epochs=20):
 
     # === Config ===
     config = load_config()
+    input_dim = config["input_dim"]
+    num_classes = config["num_classes"]
     load_from_ckpt = config.get("load_from_ckpt", False)
     resume_training = config.get("resume_training", False)
 
+    # === Email Setup ===
     EMAIL_ADDRESS = config.get("EMAIL_ADDRESS", "")
     EMAIL_PASSWORD = config.get("EMAIL_PASSWORD", "")
     SMTP_SERVER = config.get("SMTP_SERVER", "")
@@ -29,9 +30,6 @@ def train_model(data_dir="data", output_dir="checkpoints", epochs=20):
     train_loader, val_loader = get_dataloaders(data_dir)
 
     # === Model ===
-    # input_dim = 28 * 28
-    # num_classes = 10
-    input_dim, num_classes = get_input_dim_num_classes(train_loader)
     model = DigitClassifier(input_dim=input_dim, num_classes=num_classes)
 
     # === Callbacks ===
@@ -67,7 +65,7 @@ def train_model(data_dir="data", output_dir="checkpoints", epochs=20):
         with open(f"./error_log_{timestamp}.txt", 'a') as f:
             f.write(error_message + '\n')
 
-        # Optional: email notification
+        # === Email notification ===
         # send_error_email("DigitClassifier Training Failed", error_message,
         #                  EMAIL_ADDRESS, EMAIL_PASSWORD, SMTP_SERVER, SMTP_PORT)
 

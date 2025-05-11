@@ -7,18 +7,21 @@ import os
 import torch
 from digit_classification.data import get_testloader
 from digit_classification.models.cnn import DigitClassifier
+from digit_classification.utils.utils import load_config
 from digit_classification.utils.model_utils import get_latest_ckpt, get_input_dim_num_classes
 from digit_classification.utils.plot_utils import print_classification_report, plot_confusion_matrix, plot_image
 
-label_map = {0: 0, 5: 1, 8: 2}
-label_map_reverse = {0: 0, 1: 5, 2: 8}
 
 def evaluate_model(data_dir="data", checkpoint_path="checkpoints"):
+    config = load_config()
+    input_dim = config["input_dim"]
+    num_classes = config["num_classes"]
+    label_map_reverse = config["label_map_reverse"]
+
     # === Load test_set ===
     test_loader = get_testloader(data_dir=data_dir)
 
     # === Define Model ===
-    input_dim, num_classes = get_input_dim_num_classes(test_loader)
     model = DigitClassifier(input_dim=input_dim, num_classes=num_classes)
 
     # === Find Checkpoint ===
