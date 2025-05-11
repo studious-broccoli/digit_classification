@@ -5,14 +5,19 @@
 import pdb
 import os
 import torch
+# === Custom Functions ===
 from digit_classification.data import get_testloader
 from digit_classification.models.cnn import DigitClassifier
 from digit_classification.utils.utils import load_config
-from digit_classification.utils.model_utils import get_latest_ckpt, get_input_dim_num_classes
+from digit_classification.utils.model_utils import get_valid_checkpoint
 from digit_classification.utils.plot_utils import print_classification_report, plot_confusion_matrix, plot_image
 
 
-def evaluate_model(data_dir="data", checkpoint_path="checkpoints"):
+def evaluate_model(data_dir: str = "data", checkpoint_path: str = "checkpoints") -> None:
+    # === Device Setup ===
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+
+    # === Configuration Settings ===
     config = load_config()
     input_dim = config["input_dim"]
     num_classes = config["num_classes"]
@@ -25,13 +30,11 @@ def evaluate_model(data_dir="data", checkpoint_path="checkpoints"):
     model = DigitClassifier(input_dim=input_dim, num_classes=num_classes)
 
     # === Find Checkpoint ===
-    resume_ckpt = get_latest_ckpt(checkpoint_path)
-    if not resume_ckpt:
-        raise FileNotFoundError(f"No checkpoint found in {resume_ckpt}")
+    resume_ckpt = get_valid_checkpoint(checkpoint_path)
 
     # === Load Checkpoint ===
     print(f" Loading checkpoint: {resume_ckpt}")
-    model.load_state_dict(torch.load(resume_ckpt, map_location=torch.device('cpu'))["state_dict"])
+    model.load_state_dict(torch.load(resume_ckpt, map_location=device)["state_dict"])
     model.eval()
 
     # === Data Arrays ===
@@ -61,7 +64,7 @@ def evaluate_model(data_dir="data", checkpoint_path="checkpoints"):
     print_classification_report(y_true_labels, y_pred_labels, message="... Test Classification Report ...")
 
     # === Confusion Matrix ===
-    filename = os.path.join(checkpoint_path, "Test_Confusion_Matrix.png")
+    filename = os.path.join(checkpoint_path, "confusion_matrix_test.png")
     cm_title = plot_confusion_matrix(y_true_labels, y_pred_labels, model_name="DigitClassifier",
                                      dataset="Test", filename=filename)
     print(f"{cm_title}\nSaving Confusion Matrix: {filename}")

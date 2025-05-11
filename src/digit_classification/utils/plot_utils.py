@@ -1,8 +1,11 @@
+import os
 import numpy as np
+import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix, classification_report, accuracy_score, f1_score
 import torch
+
 
 # ------------------------------
 # Confusion Matrix
@@ -55,6 +58,9 @@ def plot_confusion_matrix(y_true, y_pred, model_name="CNN", dataset="Validation"
     return title
 
 
+# ------------------------------
+# Format Uniform CM Title
+# ------------------------------
 def format_cm_title(y_true, y_pred, model_name="CNN", dataset="Validation"):
     acc = accuracy_score(y_true, y_pred),
     f1 = f1_score(y_true, y_pred, average="weighted")
@@ -93,3 +99,38 @@ def plot_image(image, out_file, title=""):
     plt.tight_layout()
     plt.savefig(out_file, bbox_inches='tight')
     plt.close()
+
+
+# ------------------------------
+# Plot Learning Curve for Training
+# ------------------------------
+def plot_learning_curves(log_dir: str) -> None:
+    """Plot training and validation loss curves from CSV logs."""
+    csv_path = os.path.join(log_dir, "metrics.csv")
+    if not os.path.exists(csv_path):
+        print("[WARNING] No metrics.csv found — skipping plot.")
+        return
+
+    df = pd.read_csv(csv_path)
+    if 'epoch' not in df.columns:
+        print("[WARNING] Invalid metrics file format.")
+        return
+
+    train_loss = df[df["split"] == "train"]
+    val_loss = df[df["split"] == "val"]
+
+    plt.figure()
+    if 'loss' in train_loss.columns:
+        plt.plot(train_loss["epoch"], train_loss["loss"], label="Train Loss")
+    if 'loss' in val_loss.columns:
+        plt.plot(val_loss["epoch"], val_loss["loss"], label="Val Loss")
+    plt.xlabel("Epoch")
+    plt.ylabel("Loss")
+    plt.title("Training Curve")
+    plt.legend()
+    plt.grid(True)
+
+    out_path = os.path.join(log_dir, "learning_curve.png")
+    plt.savefig(out_path)
+    plt.close()
+    print(f"[INFO] Saved learning curve to {out_path}")

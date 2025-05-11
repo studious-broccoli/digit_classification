@@ -1,15 +1,17 @@
 from datetime import datetime
+from typing import Optional
 import torch
 from lightning.pytorch import Trainer
 from lightning.pytorch.callbacks import ModelCheckpoint, LearningRateMonitor, EarlyStopping
-
+# === Custom Functions ===
 from digit_classification.models.cnn import DigitClassifier
 from digit_classification.utils.model_utils import send_error_email, get_latest_ckpt
+from digit_classification.utils.plot_utils import plot_learning_curves
 from digit_classification.utils.utils import load_config
 from digit_classification.data import get_dataloaders
 
 
-def train_model(data_dir="data", output_dir="checkpoints", epochs=20):
+def train_model(data_dir: str = "data", output_dir: str = "checkpoints", epochs: int = 20) -> None:
     # === Device Setup ===
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
@@ -19,12 +21,7 @@ def train_model(data_dir="data", output_dir="checkpoints", epochs=20):
     num_classes = config["num_classes"]
     load_from_ckpt = config.get("load_from_ckpt", False)
     resume_training = config.get("resume_training", False)
-
-    # === Email Setup ===
-    EMAIL_ADDRESS = config.get("EMAIL_ADDRESS", "")
-    EMAIL_PASSWORD = config.get("EMAIL_PASSWORD", "")
-    SMTP_SERVER = config.get("SMTP_SERVER", "")
-    SMTP_PORT = config.get("SMTP_PORT", "")
+    max_epochs = config["max_epochs"]
 
     # === Load Data ===
     train_loader, val_loader = get_dataloaders(data_dir)
@@ -42,9 +39,9 @@ def train_model(data_dir="data", output_dir="checkpoints", epochs=20):
 
     # === Trainer ===
     trainer = Trainer(
-        max_epochs=epochs,
+        max_epochs=min(max_epochs, epochs),
         default_root_dir=output_dir,
-        accelerator="cpu",
+        accelerator=device,
         callbacks=[lr_monitor, checkpoint_callback, early_stop_callback]
     )
 
@@ -56,6 +53,14 @@ def train_model(data_dir="data", output_dir="checkpoints", epochs=20):
         else:
             print("[INFO] Starting training from scratch...")
             trainer.fit(model, train_dataloaders=train_loader, val_dataloaders=val_loader)
+
+        # Plot learning curves
+        log_dir = getattr(trainer.logger, "log_dir", None)
+        if log_dir:
+            plot_learning_curves(log_dir)
+        else:
+            print("[WARNING] Logger has no log_dir — skipping learning curve plot.")
+
     except Exception as e:
         now = datetime.now()
         timestamp = now.strftime('%Y-%m-%d_%H-%M-%S')
@@ -66,6 +71,10 @@ def train_model(data_dir="data", output_dir="checkpoints", epochs=20):
             f.write(error_message + '\n')
 
         # === Email notification ===
+        # EMAIL_ADDRESS = config.get("EMAIL_ADDRESS", "")
+        # EMAIL_PASSWORD = config.get("EMAIL_PASSWORD", "")
+        # SMTP_SERVER = config.get("SMTP_SERVER", "")
+        # SMTP_PORT = config.get("SMTP_PORT", "")
         # send_error_email("DigitClassifier Training Failed", error_message,
         #                  EMAIL_ADDRESS, EMAIL_PASSWORD, SMTP_SERVER, SMTP_PORT)
 

@@ -2,12 +2,17 @@ import torch
 from PIL import Image
 # === Custom Functions ===
 from digit_classification.models.cnn import DigitClassifier
+from digit_classification.utils.model_utils import get_valid_checkpoint
 from digit_classification.utils.plot_utils import plot_image
 from digit_classification.utils.utils import load_config
 from digit_classification.transforms import predict_transform
 
 
-def predict_from_checkpoint(checkpoint_path="checkpoints", input_path="test.png"):
+def predict_from_checkpoint(checkpoint_path: str = "checkpoints", input_path: str = "test.png", ) -> None:
+    # === Device Setup ===
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+
+    # === Configuration Settings ===
     config = load_config()
     input_dim = config["input_dim"]
     num_classes = config["num_classes"]
@@ -15,9 +20,12 @@ def predict_from_checkpoint(checkpoint_path="checkpoints", input_path="test.png"
     # === Define Model ===
     model = DigitClassifier(input_dim=input_dim, num_classes=num_classes)
 
+    # === Find Checkpoint ===
+    resume_ckpt = get_valid_checkpoint(checkpoint_path)
+
     # === Load Checkpoint ===
-    print(f"Loading checkpoint: {checkpoint_path}")
-    model.load_state_dict(torch.load(checkpoint_path, map_location=torch.device('cpu'))["state_dict"])
+    print(f" Loading checkpoint: {resume_ckpt}")
+    model.load_state_dict(torch.load(resume_ckpt, map_location=device)["state_dict"])
     model.eval()
 
     # === Load and preprocess image ===
