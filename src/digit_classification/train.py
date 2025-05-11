@@ -6,7 +6,7 @@ from lightning.pytorch import Trainer
 from lightning.pytorch.callbacks import ModelCheckpoint, LearningRateMonitor, EarlyStopping
 
 from digit_classification.models.cnn import DigitClassifier
-from digit_classification.utils.model_utils import send_error_email, get_latest_ckpt
+from digit_classification.utils.model_utils import send_error_email, get_latest_ckpt, get_input_dim_num_classes
 from digit_classification.utils.utils import load_config
 from digit_classification.data import get_dataloaders
 
@@ -29,8 +29,9 @@ def train_model(data_dir="data", output_dir="checkpoints", epochs=20):
     train_loader, val_loader = get_dataloaders(data_dir)
 
     # === Model ===
-    input_dim = 28 * 28
-    num_classes = 10
+    # input_dim = 28 * 28
+    # num_classes = 10
+    input_dim, num_classes = get_input_dim_num_classes(train_loader)
     model = DigitClassifier(input_dim=input_dim, num_classes=num_classes)
 
     # === Callbacks ===

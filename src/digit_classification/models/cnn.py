@@ -10,8 +10,8 @@ class DigitClassifier(LightningModule):
         super().__init__()
         # Your model implementation here
         self.learning_rate = learning_rate
-        self.train_accuracy = Accuracy(task="multiclass", num_classes=10)
-        self.val_accuracy = Accuracy(task="multiclass", num_classes=10)
+        self.train_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
+        self.val_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
 
         self.model = nn.Sequential(
             nn.LayerNorm(input_dim),
@@ -43,6 +43,7 @@ class DigitClassifier(LightningModule):
         x = x.view(x.size(0), -1)  # flatten the input
         logits = self(x)
         loss = F.cross_entropy(logits, y)
+        # add weighted
         self.val_accuracy(logits, y)
         self.log("val_loss", loss, on_step=False, on_epoch=True)
         self.log("val_acc", self.val_accuracy, on_step=False, on_epoch=True)

@@ -2,6 +2,14 @@ batch_size: 32
 learning_rate: 0.001
 max_epochs: 2
 
+# Model Configuration
+INPUT_DIM: 784
+NUM_CLASSES: 3
+
+# Mappings
+label_map: {0: 0, 5: 1, 8: 2}
+label_map_reverse: {0: 0, 1: 5, 2: 8}
+
 load_from_ckpt: False
 
 # Email configuration

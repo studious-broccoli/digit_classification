@@ -1,10 +1,16 @@
 import torch
 from digit_classification.models.cnn import DigitClassifier
+from digit_classification.utils.utils import load_config
 
+config = load_config()
 
 def test_model_forward_pass():
-    model = DigitClassifier(input_dim=28 * 28, num_classes=10)
-    dummy_input = torch.randn(8, 1, 28, 28)
+    input_dim = config["INPUT_DIM"]
+    batch_size = config["BATCH_SIZE"]
+    num_classes = config["NUM_CLASSES"]
+
+    model = DigitClassifier(input_dim=input_dim, num_classes=num_classes)
+    dummy_input = torch.randn(batch_size, input_dim)
     output = model(dummy_input)
 
-    assert output.shape == (8, 10), "Output shape should be [batch_size, num_classes]"
+    assert output.shape == (batch_size, num_classes), "Output shape should be [batch_size, num_classes]"

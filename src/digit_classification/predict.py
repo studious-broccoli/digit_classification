@@ -5,12 +5,16 @@ from torchvision import transforms
 
 from digit_classification.models.cnn import DigitClassifier
 from digit_classification.utils.plot_utils import plot_image
+from digit_classification.utils.utils import load_config
+
+config = load_config()
 
 
 def predict_from_checkpoint(checkpoint_path="checkpoints", input_path="test.png"):
+
     # === Define Model ===
-    input_dim = 28 * 28
-    num_classes = 10
+    input_dim = config["INPUT_DIM"]
+    num_classes = config["NUM_CLASSES"]
     model = DigitClassifier(input_dim=input_dim, num_classes=num_classes)
 
     # === Load Checkpoint ===
@@ -29,10 +33,11 @@ def predict_from_checkpoint(checkpoint_path="checkpoints", input_path="test.png"
     # === Load and preprocess image ===
     image = Image.open(input_path)
     image_tensor = transform(image).unsqueeze(0)  # Add batch dimension: [1, 1, 28, 28]
+    image_flat = image_tensor.view(image_tensor.size(0), -1)  # flatten the input
 
     # === Predict ===
     with torch.no_grad():
-        output = model(image_tensor)
+        output = model(image_flat)
         predicted_label = output.argmax(dim=1).item()
 
     print(f"The predicted digit is: {predicted_label}")

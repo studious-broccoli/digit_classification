@@ -1,5 +1,8 @@
 import os
 import glob
+import pdb
+
+import torch
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -52,3 +55,12 @@ def get_latest_ckpt(logs_path: str = "./lightning_logs/version*"):
     print(f"\n📨 Loading: {latest_ckpt_dir}")
     print(f"📨 Loading: {latest_ckpts}")
     return latest_ckpts
+
+
+def get_input_dim_num_classes(dataloader):
+    for images, labels in dataloader:
+        input_shape = images.shape[1:]  # e.g., (1, 28, 28)
+        input_dim = input_shape[0] * input_shape[1] * input_shape[2]
+        unique_classes = torch.unique(labels).tolist()
+        num_classes = len(set(unique_classes))
+        return input_dim, num_classes

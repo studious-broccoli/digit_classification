@@ -2,6 +2,7 @@ import os
 import shutil
 from digit_classification.train import train_model
 
+
 def test_train_model_runs(tmp_path):
     # Use a small, temporary checkpoint dir for test
     output_dir = tmp_path / "checkpoints"
