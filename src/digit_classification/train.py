@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 import torch
 from lightning.pytorch import Trainer
 from lightning.pytorch.loggers import CSVLogger
@@ -14,16 +13,16 @@ from digit_classification.data import get_dataloaders
 
 def train_model(data_dir: str = "data", output_dir: str = "checkpoints", epochs: int = 20) -> None:
     # === Device Setup ===
-    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     accelerator = "cuda" if device.type == "cuda" else "cpu"
 
     # === Config ===
     config = load_config()
     input_dim = config["input_dim"]
     num_classes = config["num_classes"]
+    max_epochs = config["max_epochs"]
     load_from_ckpt = config.get("load_from_ckpt", False)
     resume_training = config.get("resume_training", False)
-    max_epochs = config["max_epochs"]
 
     # === Load Data ===
     train_loader, val_loader, _ = get_dataloaders(data_dir)
@@ -83,10 +82,8 @@ def train_model(data_dir: str = "data", output_dir: str = "checkpoints", epochs:
         #                  EMAIL_ADDRESS, EMAIL_PASSWORD, SMTP_SERVER, SMTP_PORT)
 
 
-# === Entry Point for CLI or Script Use ===
 if __name__ == "__main__":
     import multiprocessing
     multiprocessing.set_start_method("spawn", force=True)
 
-    # Example hardcoded test call — replace with argparse/typer if needed directly here
-    train_model(data_dir="data/MNIST", output_dir="checkpoints", epochs=2)
+    train_model(data_dir="data/", output_dir="checkpoints", epochs=2)

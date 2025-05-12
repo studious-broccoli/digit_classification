@@ -1,5 +1,6 @@
 import torch
 from PIL import Image
+from sklearn.preprocessing import LabelEncoder
 # === Custom Functions ===
 from digit_classification.models.cnn import DigitClassifier
 from digit_classification.utils.model_utils import get_valid_checkpoint
@@ -16,9 +17,15 @@ def predict_from_checkpoint(checkpoint_path: str = "checkpoints", input_path: st
     config = load_config()
     input_dim = config["input_dim"]
     num_classes = config["num_classes"]
+    target_labels = config["target_labels"]
+
+    # === Label Encoder ===
+    label_encoder = LabelEncoder()
+    label_encoder.fit(target_labels)
 
     # === Define Model ===
     model = DigitClassifier(input_dim=input_dim, num_classes=num_classes)
+    model.to(device)
 
     # === Find Checkpoint ===
     resume_ckpt = get_valid_checkpoint(checkpoint_path)
@@ -31,12 +38,13 @@ def predict_from_checkpoint(checkpoint_path: str = "checkpoints", input_path: st
     # === Load and preprocess image ===
     image = Image.open(input_path)
     image_tensor = predict_transform(image).unsqueeze(0)  # Add batch dimension: [1, 1, 28, 28]
-    # image_flat = image_tensor.view(image_tensor.size(0), -1)  # flatten the input
+    image_tensor = image_tensor.to(device)
 
     # === Predict ===
     with torch.no_grad():
         output = model(image_tensor)
         predicted_label = output.argmax(dim=1).item()
+        predicted_label = label_encoder.inverse_transform([predicted_label])[0]
 
     print(f"The predicted digit is: {predicted_label}")
 

@@ -1,6 +1,7 @@
-# Data Connfiguration
+# Data Configuration
 num_workers: 0
 seed: 42
+train_split: 0.8
 
 # Model Configuration
 input_dim: 784
@@ -15,8 +16,7 @@ max_epochs: 20
 load_from_ckpt: False
 
 # Label Mappings
-label_map: {0: 0, 5: 1, 8: 2}
-label_map_reverse: {0: 0, 1: 5, 2: 8}
+target_labels: [0, 5, 8]
 
 # Test Configuration
 data_dir: "data/"
