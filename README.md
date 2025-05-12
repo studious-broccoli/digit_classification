@@ -42,7 +42,7 @@ python src/digit_classification/cli.py predict \
 
 <figure>
     <img src="images/test_prediction.png"  alt="Prediction" width="500"/>
-    <figcaption>Figure 2: Prediction Example.</figcaption>
+    <figcaption>Figure 3: Prediction Example.</figcaption>
 </figure>
 
 
