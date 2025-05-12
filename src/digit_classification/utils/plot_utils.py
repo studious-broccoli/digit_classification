@@ -96,7 +96,6 @@ def plot_image(image, out_file, title=""):
         image = image.squeeze()
 
     plt.imshow(image, cmap='gray')
-    plt.title(title)
     plt.axis('off')
     plt.tight_layout()
     plt.savefig(out_file, bbox_inches='tight')
