@@ -6,9 +6,6 @@ tests/__pycache__/
 makefile
 src/digit_classification/models/__pycache__/
 *.pyc
-*.png
 *.pt
 *.log
 __pycache__/
-test.png
-test_prediction.png
