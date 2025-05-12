@@ -60,8 +60,8 @@ def evaluate_model(data_dir: str = "data", checkpoint_path: str = "checkpoints")
         first_image = x_batch[0]  # Tensor of shape [1, 28, 28]
         true_label = label_encoder.inverse_transform([y_batch[0].item()])[0]
         if true_label == 8:
-            plot_image(first_image, out_file="test.png", title=f"Label: {true_label}")
-            print("Saved one test image as test.png")
+            plot_image(first_image, out_file="images/test.png", title=f"Label: {true_label}")
+            print("Saved one test image as images/test.png")
             break  # Only one image for testing right now
 
     # === Map Labels ===
