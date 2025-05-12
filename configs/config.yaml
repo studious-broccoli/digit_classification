@@ -1,12 +1,15 @@
 # Data Connfiguration
 num_workers: 0
+seed: 42
 
 # Model Configuration
 input_dim: 784
+image_dim: 28
+num_channels: 1
 num_classes: 3
 
 # Training Parameters
-batch_size: 32
+batch_size: 16
 learning_rate: 0.001
 max_epochs: 20
 load_from_ckpt: False
@@ -16,7 +19,7 @@ label_map: {0: 0, 5: 1, 8: 2}
 label_map_reverse: {0: 0, 1: 5, 2: 8}
 
 # Test Configuration
-data_dir: "data/MNIST"
+data_dir: "data/"
 output_dir: "checkpoints"
 
 # Email configuration

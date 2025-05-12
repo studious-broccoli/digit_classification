@@ -1,4 +1,6 @@
 import os
+import pdb
+
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -105,31 +107,50 @@ def plot_image(image, out_file, title=""):
 # Plot Learning Curve for Training
 # ------------------------------
 def plot_learning_curves(log_dir: str) -> None:
-    """Plot training and validation loss curves from CSV logs."""
+    """Plot learning curves from CSVLogger output (metrics.csv)."""
     csv_path = os.path.join(log_dir, "metrics.csv")
     if not os.path.exists(csv_path):
         print("[WARNING] No metrics.csv found — skipping plot.")
         return
 
     df = pd.read_csv(csv_path)
-    if 'epoch' not in df.columns:
-        print("[WARNING] Invalid metrics file format.")
+
+    if "epoch" not in df.columns:
+        print("[WARNING] Invalid metrics file format — no 'epoch' column.")
         return
 
-    train_loss = df[df["split"] == "train"]
-    val_loss = df[df["split"] == "val"]
+    # Drop rows where epoch is NaN (e.g., learning rate only rows)
+    df = df.dropna(subset=["epoch"])
+    time_steps = df["epoch"].astype(int).to_numpy()
 
-    plt.figure()
-    if 'loss' in train_loss.columns:
-        plt.plot(train_loss["epoch"], train_loss["loss"], label="Train Loss")
-    if 'loss' in val_loss.columns:
-        plt.plot(val_loss["epoch"], val_loss["loss"], label="Val Loss")
-    plt.xlabel("Epoch")
-    plt.ylabel("Loss")
-    plt.title("Training Curve")
-    plt.legend()
-    plt.grid(True)
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8), sharex=True)
 
+    # --- Loss subplot ---
+    if "train_loss_epoch" in df.columns:
+        ax1.plot(time_steps, df["train_loss_epoch"].ffill().to_numpy(),
+                 label="Train Loss", linestyle="--", marker="o")
+    if "val_loss" in df.columns:
+        ax1.plot(time_steps, df["val_loss"].ffill().to_numpy(),
+                 label="Val Loss", linestyle="--", marker="s")
+    ax1.set_ylabel("Loss")
+    ax1.set_title("Loss Curves")
+    ax1.legend()
+    ax1.grid(True)
+
+    # --- Accuracy subplot ---
+    if "train_acc" in df.columns:
+        ax2.plot(time_steps, df["train_acc"].ffill().to_numpy(),
+                 label="Train Acc", linestyle="--", marker="x")
+    if "val_acc" in df.columns:
+        ax2.plot(time_steps, df["val_acc"].ffill().to_numpy(),
+                 label="Val Acc", linestyle="--", marker="^")
+    ax2.set_xlabel("Epoch")
+    ax2.set_ylabel("Accuracy")
+    ax2.set_title("Accuracy Curves")
+    ax2.legend()
+    ax2.grid(True)
+
+    plt.tight_layout()
     out_path = os.path.join(log_dir, "learning_curve.png")
     plt.savefig(out_path)
     plt.close()

@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Optional
 import torch
 from lightning.pytorch import Trainer
+from lightning.pytorch.loggers import CSVLogger
 from lightning.pytorch.callbacks import ModelCheckpoint, LearningRateMonitor, EarlyStopping
 # === Custom Functions ===
 from digit_classification.models.cnn import DigitClassifier
@@ -14,6 +15,7 @@ from digit_classification.data import get_dataloaders
 def train_model(data_dir: str = "data", output_dir: str = "checkpoints", epochs: int = 20) -> None:
     # === Device Setup ===
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    accelerator = "cuda" if device.type == "cuda" else "cpu"
 
     # === Config ===
     config = load_config()
@@ -24,7 +26,7 @@ def train_model(data_dir: str = "data", output_dir: str = "checkpoints", epochs:
     max_epochs = config["max_epochs"]
 
     # === Load Data ===
-    train_loader, val_loader = get_dataloaders(data_dir)
+    train_loader, val_loader, _ = get_dataloaders(data_dir)
 
     # === Model ===
     model = DigitClassifier(input_dim=input_dim, num_classes=num_classes)
@@ -38,10 +40,12 @@ def train_model(data_dir: str = "data", output_dir: str = "checkpoints", epochs:
     resume_ckpt = get_latest_ckpt(output_dir) if resume_training else None
 
     # === Trainer ===
+    csv_logger = CSVLogger(save_dir=output_dir, name="lightning_logs")
     trainer = Trainer(
         max_epochs=min(max_epochs, epochs),
         default_root_dir=output_dir,
-        accelerator=device,
+        accelerator=accelerator,
+        logger=csv_logger,
         callbacks=[lr_monitor, checkpoint_callback, early_stop_callback]
     )
 

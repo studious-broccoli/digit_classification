@@ -13,39 +13,43 @@ from email.mime.multipart import MIMEMultipart
 # Extract Version Number
 # ------------------------------
 def extract_version_number(path: str) -> int:
+    """Helper to extract version number from path."""
     try:
-        return int(path.split("version_")[-1].split('/')[0])
-    except (IndexError, ValueError):
-        return -1  # fallback for malformed paths
+        return int(path.split("version_")[-1].split("/")[0])
+    except Exception:
+        return -1
 
 
 # ------------------------------
 # Extract Epoch Int
 # ------------------------------
-def extract_epoch_number(ckpt: str) -> int:
+def extract_epoch_number(ckpt_path: str) -> int:
     try:
-        return int(ckpt.split("epoch=")[-1].split('-')[0])
-    except (IndexError, ValueError):
+        return int(os.path.basename(ckpt_path).split("epoch=")[-1].split("-")[0])
+    except Exception:
         return -1
 
 
 # ------------------------------
 # Find Lastest Checkpoint
 # ------------------------------
-def get_latest_ckpt(logs_root: str = "./lightning_logs") -> Optional[str]:
-    log_dirs = sorted(
-        glob.glob(os.path.join(logs_root, "version*")),
-        key=extract_version_number,
-        reverse=True,
-    )
+def get_latest_ckpt(logs_root: str = "checkpoints/lightning_logs/version_2") -> Optional[str]:
+    """
+    Get the latest checkpoint inside a single version directory.
+    Expects structure: version_X/checkpoints/*.ckpt
+    """
+    ckpt_dir = os.path.join(logs_root, "checkpoints")
+    if not os.path.isdir(ckpt_dir):
+        print(f"[WARNING] No 'checkpoints/' directory found in: {logs_root}")
+        return None
 
-    for log_dir in log_dirs:
-        ckpt_dir = os.path.join(log_dir, "checkpoints")
-        if os.path.isdir(ckpt_dir):
-            ckpt_files = glob.glob(os.path.join(ckpt_dir, "*.ckpt"))
-            if ckpt_files:
-                return sorted(ckpt_files, key=extract_epoch_number, reverse=True)[0]
-    return None
+    ckpt_files = glob.glob(os.path.join(ckpt_dir, "*.ckpt"))
+    if not ckpt_files:
+        print(f"[WARNING] No checkpoint files found in: {ckpt_dir}")
+        return None
+
+    latest_ckpt = sorted(ckpt_files, key=extract_epoch_number, reverse=True)[0]
+    return latest_ckpt
 
 
 # ------------------------------

@@ -1,25 +1,12 @@
-# python src/digit_classification/cli.py download-data --data-dir data/MNIST
 from collections import Counter
-from torchvision import datasets, transforms
+from typing import Tuple
+from torchvision import datasets
 from torch.utils.data import DataLoader, Subset, random_split
 from torch.utils.data import Dataset
 import torch
-import random
-import numpy as np
 
-from digit_classification.utils.utils import load_config
+from digit_classification.utils.utils import load_config, set_seed
 from digit_classification.transforms import data_transform
-
-
-def set_seed(seed=42):
-    random.seed(seed)
-    np.random.seed(seed)
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
-
-    # For determinism in convolutional algorithms
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
 
 
 # Get indices for desired label counts
@@ -41,49 +28,53 @@ class MappedSubset(Dataset):
         return x, self.label_map[int(y)]
 
 
-def get_dataloaders(data_dir="data"):
-    # Set the seed at the start
-    set_seed(42)
-
+def get_dataloaders(data_dir: str = "data") -> Tuple[DataLoader, DataLoader, DataLoader]:
+    # === Load Config ===
     config = load_config()
     num_workers = config["num_workers"]
-    label_map = config["label_map"]
     batch_size = config["batch_size"]
+    label_map = config["label_map"]
+    seed = config["seed"]
 
-    # Load full MNIST dataset
+    # === Reproducibility ===
+    set_seed(seed)
+
+    # === Load Dataset ===
     mnist_dataset = datasets.MNIST(root=data_dir, train=True, download=True, transform=data_transform)
     print("MNIST Dataset Shape =", mnist_dataset.data.shape)
     print(Counter(mnist_dataset.targets.tolist()))
 
-    # Access all targets
+    # === Select target digits ===
     targets = mnist_dataset.targets
+    indices = torch.cat([
+        get_label_indices(targets, 8, 3500),
+        get_label_indices(targets, 0, 1200),
+        get_label_indices(targets, 5, 300)
+    ])
+    indices = indices[torch.randperm(len(indices))]
 
-    # Get class-specific indices
-    label_8_indices = get_label_indices(targets, 8, 3500)
-    label_0_indices = get_label_indices(targets, 0, 1200)
-    label_5_indices = get_label_indices(targets, 5, 300)
-
-    # Combine and shuffle
-    selected_indices = torch.cat([label_8_indices, label_0_indices, label_5_indices])
-    selected_indices = selected_indices[torch.randperm(len(selected_indices))]
-
-    # Create subset and remap labels
-    subset_dataset = Subset(mnist_dataset, selected_indices)
+    # === Subset & remap labels ===
+    subset_dataset = Subset(mnist_dataset, indices)
     mapped_dataset = MappedSubset(subset_dataset, label_map)
 
-    # Train/val split
-    train_size = int(0.8 * len(mapped_dataset))
-    val_size = len(mapped_dataset) - train_size
-    train_dataset, val_dataset = random_split(mapped_dataset, [train_size, val_size])
+    # === Split: train / val / test ===
+    total_len = len(mapped_dataset)
+    train_val_len = int(0.8 * total_len)
+    test_len = total_len - train_val_len
+    train_val_dataset, test_dataset = random_split(mapped_dataset, [train_val_len, test_len])
 
-    print("Train Dataset Size =", len(train_dataset))
-    print("Validation Dataset Size =", len(val_dataset))
+    train_len = int(0.8 * len(train_val_dataset))
+    val_len = len(train_val_dataset) - train_len
+    train_dataset, val_dataset = random_split(train_val_dataset, [train_len, val_len])
 
-    # DataLoaders
+    print(f"Train Size: {len(train_dataset)}, Val Size: {len(val_dataset)}, Test Size: {len(test_dataset)}")
+
+    # === DataLoaders ===
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers)
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
 
-    return train_loader, val_loader
+    return train_loader, val_loader, test_loader
 
 
 def get_testloader(data_dir="data"):

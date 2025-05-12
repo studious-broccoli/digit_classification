@@ -6,7 +6,7 @@ import pdb
 import os
 import torch
 # === Custom Functions ===
-from digit_classification.data import get_testloader
+from digit_classification.data import get_dataloaders
 from digit_classification.models.cnn import DigitClassifier
 from digit_classification.utils.utils import load_config
 from digit_classification.utils.model_utils import get_valid_checkpoint
@@ -24,7 +24,7 @@ def evaluate_model(data_dir: str = "data", checkpoint_path: str = "checkpoints")
     label_map_reverse = config["label_map_reverse"]
 
     # === Load test_set ===
-    test_loader = get_testloader(data_dir=data_dir)
+    _, _, test_loader = get_dataloaders(data_dir)
 
     # === Define Model ===
     model = DigitClassifier(input_dim=input_dim, num_classes=num_classes)
@@ -42,7 +42,6 @@ def evaluate_model(data_dir: str = "data", checkpoint_path: str = "checkpoints")
     y_pred = []
     with torch.no_grad():
         for x_batch, y_batch in test_loader:
-            x_batch = x_batch.view(x_batch.size(0), -1)  # flatten the input
             preds = model(x_batch)
             predicted_labels = preds.argmax(dim=1)
             y_true.extend(y_batch.numpy())

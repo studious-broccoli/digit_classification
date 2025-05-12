@@ -31,11 +31,11 @@ def predict_from_checkpoint(checkpoint_path: str = "checkpoints", input_path: st
     # === Load and preprocess image ===
     image = Image.open(input_path)
     image_tensor = predict_transform(image).unsqueeze(0)  # Add batch dimension: [1, 1, 28, 28]
-    image_flat = image_tensor.view(image_tensor.size(0), -1)  # flatten the input
+    # image_flat = image_tensor.view(image_tensor.size(0), -1)  # flatten the input
 
     # === Predict ===
     with torch.no_grad():
-        output = model(image_flat)
+        output = model(image_tensor)
         predicted_label = output.argmax(dim=1).item()
 
     print(f"The predicted digit is: {predicted_label}")
