@@ -5,7 +5,8 @@ checkpoints/
 tests/__pycache__/
 makefile
 src/digit_classification/models/__pycache__/
-*.pyc
+src/digit_classification.egg-info/
+*.pyci
 *.pt
 *.log
 __pycache__/
