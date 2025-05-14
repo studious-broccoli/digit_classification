@@ -10,9 +10,13 @@ def test_model_forward_pass():
     num_channels = config["num_channels"]
     batch_size = config["batch_size"]
     num_classes = config["num_classes"]
+    use_cnn = config["use_cnn"]
 
     # === Define Model ===
-    model = DigitClassifier(input_dim=input_dim, num_classes=num_classes)
+    model = DigitClassifier(input_dim=input_dim,
+                            num_classes=num_classes,
+                            use_cnn=use_cnn)
+
     # === Create fake input and check output shape ===
     fake_input = torch.randn(batch_size, num_channels, image_dim, image_dim)
     output = model(fake_input)
