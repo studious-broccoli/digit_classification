@@ -6,7 +6,7 @@ from lightning.pytorch.loggers import CSVLogger
 from lightning.pytorch.callbacks import ModelCheckpoint, LearningRateMonitor, EarlyStopping
 # === Custom Functions ===
 from digit_classification.models.cnn import DigitClassifier
-from digit_classification.utils.model_utils import send_error_email, get_latest_ckpt, setup_multiprocessing
+from digit_classification.utils.model_utils import calculate_class_weights, get_latest_ckpt, setup_multiprocessing
 from digit_classification.utils.plot_utils import plot_learning_curves
 from digit_classification.utils.utils import load_config
 from digit_classification.data import get_dataloaders
