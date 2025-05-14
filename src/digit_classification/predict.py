@@ -17,6 +17,7 @@ def predict_from_checkpoint(checkpoint_path: str = "checkpoints", input_path: st
     config = load_config()
     input_dim = config["input_dim"]
     num_classes = config["num_classes"]
+    use_cnn = config["use_cnn"]
     target_labels = config["target_labels"]
 
     # === Label Encoder ===
@@ -24,7 +25,9 @@ def predict_from_checkpoint(checkpoint_path: str = "checkpoints", input_path: st
     label_encoder.fit(target_labels)
 
     # === Define Model ===
-    model = DigitClassifier(input_dim=input_dim, num_classes=num_classes)
+    model = DigitClassifier(input_dim=input_dim,
+                            num_classes=num_classes,
+                            use_cnn=use_cnn)
     model.to(device)
 
     # === Find Checkpoint ===
