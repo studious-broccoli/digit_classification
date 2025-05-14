@@ -101,16 +101,16 @@ Epoch 4: 100%|██████████████████████
 Epoch 9: 100%|█████████████████████████████████████████████████████████████████████████████████████████████| 100/100 [00:01<00:00, 55.68it/s, v_num=7]Monitored metric val_loss did not improve in the last 5 records. Best score: 0.016. Signaling Trainer to stop.                                        
 Epoch 9: 100%|█████████████████████████████████████████████████████████████████████████████████████████████| 100/100 [00:01<00:00, 55.46it/s, v_num=7]
 [INFO] Saved learning curve to checkpoints/lightning_logs/version_7/learning_curve.png  
-Training complete.  
+Training complete.    
 
 # Evaluate Output:
-Evaluating model from checkpoint checkpoints/lightning_logs/version_6/...  
-Number of CPU cores available: 12  
-Using number of workers: 8  
-MNIST Dataset Shape = torch.Size([60000, 28, 28])  
-Counter({1: 6742, 7: 6265, 3: 6131, 2: 5958, 9: 5949, 0: 5923, 6: 5918, 8: 5851, 4: 5842, 5: 5421})  
-Train Size: 3200, Val Size: 800, Test Size: 1000  
- Loading checkpoint: checkpoints/lightning_logs/version_6/checkpoints/epoch=1-step=200.ckpt
+Evaluating model from checkpoint checkpoints/lightning_logs/version_6/...    
+Number of CPU cores available: 12    
+Using number of workers: 8    
+MNIST Dataset Shape = torch.Size([60000, 28, 28])    
+Counter({1: 6742, 7: 6265, 3: 6131, 2: 5958, 9: 5949, 0  : 5923, 6: 5918, 8: 5851, 4: 5842, 5: 5421})  
+Train Size: 3200, Val Size: 800, Test Size: 1000    
+ Loading checkpoint: checkpoints/lightning_logs/version_6/checkpoints/epoch=1-step=200.ckpt  
 
  ... Test Classification Report ...
               precision    recall  f1-score   support
@@ -123,12 +123,12 @@ Train Size: 3200, Val Size: 800, Test Size: 1000
    macro avg       0.97      0.99      0.98      1000
 weighted avg       0.99      0.99      0.99      1000
 
-DigitClassifier  
-Test Accuracy: 99.10%, F1-Score: 99.11%  
-(N = 1000)  
-Saving Confusion Matrix: checkpoints/lightning_logs/version_6/confusion_matrix_test.png  
-Evaluation complete.  
+DigitClassifier    
+Test Accuracy: 99.10%, F1-Score: 99.11%    
+(N = 1000)    
+Saving Confusion Matrix: checkpoints/lightning_logs/version_6/confusion_matrix_test.png    
+Evaluation complete.    
 # Predict Output:
-Making prediction on input from images/test.png...    
- Loading checkpoint: checkpoints/lightning_logs/version_6/checkpoints/epoch=1-step=200.ckpt
-The predicted digit is: 8  
+Making prediction on input from images/test.png...      
+Loading checkpoint: checkpoints/lightning_logs/version_6/checkpoints/epoch=1-step=200.ckpt  
+The predicted digit is: 8    
