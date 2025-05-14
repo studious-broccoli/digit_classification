@@ -1,23 +1,21 @@
 # Data Configuration
-num_cores: 11  # python -c "import os; print(os.cpu_count())"
 seed: 42
 train_split: 0.8
+target_labels: [0, 5, 8]
+num_classes: 3
 
 # Model Configuration
 use_cnn: True
+num_channels: 1
 input_dim: 784 # only needed for dense network
 image_dim: 28  # only for test evaluation
-num_channels: 1
-num_classes: 3
 
 # Training Parameters
-batch_size: 16
+batch_size: 32
 learning_rate: 0.001
 max_epochs: 20
 load_from_ckpt: False
 
-# Label Mappings
-target_labels: [0, 5, 8]
 
 # Test Configuration
 data_dir: "data/"

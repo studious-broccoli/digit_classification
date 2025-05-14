@@ -1,3 +1,4 @@
+import os
 from collections import Counter
 from typing import Tuple
 from torchvision import datasets
@@ -32,7 +33,6 @@ class MappedSubset(Dataset):
 def get_dataloaders(data_dir: str = "data") -> Tuple[DataLoader, DataLoader, DataLoader]:
     # === Load Config ===
     config = load_config()
-    num_cores = config["num_cores"]
     batch_size = config["batch_size"]
     train_split = config["train_split"]
     target_labels = config["target_labels"]
@@ -42,7 +42,11 @@ def get_dataloaders(data_dir: str = "data") -> Tuple[DataLoader, DataLoader, Dat
     set_seed(seed)
 
     # === Set number of workers ===
+    num_cores = os.cpu_count()
+    print(f"Number of CPU cores available: {num_cores}")
     num_workers = min(2 * num_cores, batch_size)
+    num_workers = min(num_workers, 8)  # additional check based on warning
+    print(f"Using number of workers: {num_workers}")
 
     # === Load Dataset ===
     mnist_dataset = datasets.MNIST(root=data_dir, train=True, download=True, transform=data_transform)
@@ -79,9 +83,12 @@ def get_dataloaders(data_dir: str = "data") -> Tuple[DataLoader, DataLoader, Dat
     print(f"Train Size: {len(train_dataset)}, Val Size: {len(val_dataset)}, Test Size: {len(test_dataset)}")
 
     # === DataLoaders ===
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers)
-    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
-    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True,
+                              num_workers=num_workers, persistent_workers=num_workers > 0)
+    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False,
+                            num_workers=num_workers, persistent_workers=num_workers > 0)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False,
+                             num_workers=num_workers, persistent_workers=num_workers > 0)
 
     return train_loader, val_loader, test_loader
 
