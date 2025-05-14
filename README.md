@@ -76,16 +76,16 @@ Train Size: 3200, Val Size: 800, Test Size: 1000
 GPU available: False, used: False  
 TPU available: False, using: 0 TPU cores  
 HPU available: False, using: 0 HPUs  
-[INFO] Starting training from scratch...  
+[INFO] Starting training from scratch... 
 
-  | Name           | Type                | Params | Mode 
----------------------------------------------------------------
-0 | train_accuracy | MulticlassAccuracy  | 0      | train
-1 | val_accuracy   | MulticlassAccuracy  | 0      | train
-2 | val_recall     | MulticlassRecall    | 0      | train
-3 | val_precision  | MulticlassPrecision | 0      | train
-4 | model          | Sequential          | 420 K  | train
----------------------------------------------------------------
+Table | Name           | Type                | Params | Mode   
+---------------------------------------------------------------  
+0 | train_accuracy | MulticlassAccuracy  | 0      | train  
+1 | val_accuracy   | MulticlassAccuracy  | 0      | train  
+2 | val_recall     | MulticlassRecall    | 0      | train  
+3 | val_precision  | MulticlassPrecision | 0      | train  
+4 | model          | Sequential          | 420 K  | train  
+---------------------------------------------------------------  
 420 K     Trainable params  
 0         Non-trainable params  
 420 K     Total params  
