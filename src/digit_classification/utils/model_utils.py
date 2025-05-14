@@ -1,10 +1,11 @@
+import pdb
 import os
 import glob
-import pdb
-
+import numpy as np
 import torch
 import smtplib
 from typing import Optional
+from sklearn.utils.class_weight import compute_class_weight
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
@@ -77,6 +78,23 @@ def get_input_dim_num_classes(dataloader):
         unique_classes = torch.unique(labels).tolist()
         num_classes = len(set(unique_classes))
         return input_dim, num_classes
+
+
+# ------------------------------
+# Calculate class weights for imbalanced dataset training
+# ------------------------------
+def calculate_class_weights(train_loader):
+    train_labels = []
+    for _, y_batch in train_loader:
+        train_labels.extend(y_batch.numpy())
+    train_labels = np.array(train_labels)
+
+    class_weights = compute_class_weight(
+        class_weight='balanced',
+        classes=np.unique(train_labels),
+        y=train_labels
+    )
+    return class_weights
 
 
 # ------------------------------

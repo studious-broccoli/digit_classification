@@ -1,7 +1,5 @@
 import pdb
 from datetime import datetime
-import numpy as np
-from sklearn.utils.class_weight import compute_class_weight
 import torch
 from lightning.pytorch import Trainer
 from lightning.pytorch.loggers import CSVLogger
@@ -12,20 +10,6 @@ from digit_classification.utils.model_utils import send_error_email, get_latest_
 from digit_classification.utils.plot_utils import plot_learning_curves
 from digit_classification.utils.utils import load_config
 from digit_classification.data import get_dataloaders
-
-
-def calculate_class_weights(train_loader):
-    train_labels = []
-    for _, y_batch in train_loader:
-        train_labels.extend(y_batch.numpy())
-    train_labels = np.array(train_labels)
-
-    class_weights = compute_class_weight(
-        class_weight='balanced',
-        classes=np.unique(train_labels),
-        y=train_labels
-    )
-    return class_weights
 
 
 def train_model(data_dir: str = "data", output_dir: str = "checkpoints", epochs: int = 20) -> None:
