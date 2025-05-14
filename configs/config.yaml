@@ -4,7 +4,7 @@ seed: 42
 train_split: 0.8
 
 # Model Configuration
-model_backbone: "cnn"  # "dense"
+use_cnn: True
 input_dim: 784
 image_dim: 28
 num_channels: 1
