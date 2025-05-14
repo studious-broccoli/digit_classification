@@ -1,2 +1,0 @@
-[console_scripts]
-digit-classification = digit_classification.cli:app
