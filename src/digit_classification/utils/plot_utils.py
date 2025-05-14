@@ -86,7 +86,7 @@ def print_classification_report(y_true, y_pred, message=None):
 # ------------------------------
 # Plot Test Instance
 # ------------------------------
-def plot_image(image, out_file, title=""):
+def plot_image(image, out_file, title=None):
     plt.figure()
 
     # Handle grayscale tensors or arrays
@@ -96,6 +96,8 @@ def plot_image(image, out_file, title=""):
         image = image.squeeze()
 
     plt.imshow(image, cmap='gray')
+    if title:
+        plt.title(title)
     plt.axis('off')
     plt.tight_layout()
     plt.savefig(out_file, bbox_inches='tight')
