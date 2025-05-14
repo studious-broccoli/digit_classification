@@ -119,3 +119,14 @@ def send_error_email(subject, body,
             server.sendmail(email_address, email_address, msg.as_string())
     except Exception as e:
         print(f"Failed to send email: {e}")
+
+
+# ------------------------------
+# Setup for multiprocessing
+# ------------------------------
+def setup_multiprocessing():
+    import multiprocessing
+    try:
+        multiprocessing.set_start_method("spawn", force=True)
+    except RuntimeError:
+        pass

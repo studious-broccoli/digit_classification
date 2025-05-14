@@ -6,7 +6,7 @@ from lightning.pytorch.loggers import CSVLogger
 from lightning.pytorch.callbacks import ModelCheckpoint, LearningRateMonitor, EarlyStopping
 # === Custom Functions ===
 from digit_classification.models.cnn import DigitClassifier
-from digit_classification.utils.model_utils import send_error_email, get_latest_ckpt
+from digit_classification.utils.model_utils import send_error_email, get_latest_ckpt, setup_multiprocessing
 from digit_classification.utils.plot_utils import plot_learning_curves
 from digit_classification.utils.utils import load_config
 from digit_classification.data import get_dataloaders
@@ -14,11 +14,7 @@ from digit_classification.data import get_dataloaders
 
 def train_model(data_dir: str = "data", output_dir: str = "checkpoints", epochs: int = 20) -> None:
     # === Multiprocessing Setup ===
-    import multiprocessing
-    try:
-        multiprocessing.set_start_method("spawn", force=True)
-    except RuntimeError:
-        pass
+    setup_multiprocessing()
 
     # === Device Setup ===
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
