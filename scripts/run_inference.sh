@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Evaluate model
-python src/digit_classification/cli.py evaluate \
+digit-classification evaluate \
 --data-dir data/ \
 --checkpoint-path checkpoints/lightning_logs/version_5/
 
 # Predict
-python src/digit_classification/cli.py predict \
+digit-classification predict \
 --checkpoint-path checkpoints/lightning_logs/version_5/ \
 --input-path images/test.png
