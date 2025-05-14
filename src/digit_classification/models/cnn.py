@@ -1,3 +1,5 @@
+import pdb
+import numpy as np
 from lightning.pytorch import LightningModule
 from torchmetrics.classification import Accuracy, Precision, Recall
 from typing import Optional, List
@@ -13,7 +15,7 @@ class DigitClassifier(LightningModule):
         num_classes: int = 3,
         learning_rate: float = 1e-3,
         use_cnn: bool = True,
-        class_weights: Optional[List[float]] = None,
+        class_weights: Optional[np.ndarray] = None,
     ):
         super().__init__()
         self.save_hyperparameters()
@@ -26,11 +28,9 @@ class DigitClassifier(LightningModule):
         self.val_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
         self.val_recall = Recall(task="multiclass", num_classes=num_classes, average='macro')
         self.val_precision = Precision(task="multiclass", num_classes=num_classes, average='macro')
-
-        # Optional class weights
         self.class_weights = (
             torch.tensor(class_weights, dtype=torch.float32)
-            if class_weights else None
+            if class_weights is not None else None
         )
 
         if use_cnn:
