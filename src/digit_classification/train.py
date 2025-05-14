@@ -1,4 +1,6 @@
 from datetime import datetime
+import numpy as np
+from sklearn.utils.class_weight import compute_class_weight
 import torch
 from lightning.pytorch import Trainer
 from lightning.pytorch.loggers import CSVLogger
@@ -11,6 +13,22 @@ from digit_classification.utils.utils import load_config
 from digit_classification.data import get_dataloaders
 
 
+def calculate_class_weights(train_loader):
+    train_labels = []
+    for batch in train_loader:
+        train_labels.extend(batch["label"].cpu().numpy())  # adjust key if needed
+    train_labels = np.array(train_labels)
+
+    class_weights = compute_class_weight(
+        class_weight='balanced',
+        classes=np.unique(train_labels),
+        y=train_labels
+    )
+    class_weights = torch.tensor(class_weights, dtype=torch.float32)
+    return class_weights
+
+
+
 def train_model(data_dir: str = "data", output_dir: str = "checkpoints", epochs: int = 20) -> None:
     # === Device Setup ===
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -21,14 +39,21 @@ def train_model(data_dir: str = "data", output_dir: str = "checkpoints", epochs:
     input_dim = config["input_dim"]
     num_classes = config["num_classes"]
     max_epochs = config["max_epochs"]
+    use_cnn = config["use_cnn"]
     load_from_ckpt = config.get("load_from_ckpt", False)
     resume_training = config.get("resume_training", False)
 
     # === Load Data ===
     train_loader, val_loader, _ = get_dataloaders(data_dir)
 
+    # === Calculate class weights ===
+    class_weights = calculate_class_weights(train_loader)
+
     # === Model ===
-    model = DigitClassifier(input_dim=input_dim, num_classes=num_classes)
+    model = DigitClassifier(input_dim=input_dim,
+                            num_classes=num_classes,
+                            use_cnn=use_cnn,
+                            class_weights=class_weights)
 
     # === Callbacks ===
     lr_monitor = LearningRateMonitor(logging_interval='epoch')
