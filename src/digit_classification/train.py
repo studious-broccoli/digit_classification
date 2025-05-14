@@ -1,3 +1,4 @@
+import pdb
 from datetime import datetime
 import numpy as np
 from sklearn.utils.class_weight import compute_class_weight
@@ -15,8 +16,8 @@ from digit_classification.data import get_dataloaders
 
 def calculate_class_weights(train_loader):
     train_labels = []
-    for batch in train_loader:
-        train_labels.extend(batch["label"].cpu().numpy())  # adjust key if needed
+    for _, y_batch in train_loader:
+        train_labels.extend(y_batch.numpy())
     train_labels = np.array(train_labels)
 
     class_weights = compute_class_weight(
@@ -24,12 +25,17 @@ def calculate_class_weights(train_loader):
         classes=np.unique(train_labels),
         y=train_labels
     )
-    class_weights = torch.tensor(class_weights, dtype=torch.float32)
     return class_weights
 
 
-
 def train_model(data_dir: str = "data", output_dir: str = "checkpoints", epochs: int = 20) -> None:
+    # === Multiprocessing Setup ===
+    import multiprocessing
+    try:
+        multiprocessing.set_start_method("spawn", force=True)
+    except RuntimeError:
+        pass
+
     # === Device Setup ===
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     accelerator = "cuda" if device.type == "cuda" else "cpu"
@@ -108,7 +114,4 @@ def train_model(data_dir: str = "data", output_dir: str = "checkpoints", epochs:
 
 
 if __name__ == "__main__":
-    import multiprocessing
-    multiprocessing.set_start_method("spawn", force=True)
-
     train_model(data_dir="data/", output_dir="checkpoints", epochs=2)
