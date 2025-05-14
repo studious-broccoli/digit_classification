@@ -1,12 +1,12 @@
 # Data Configuration
-num_workers: 0
+num_cores: 11  # python -c "import os; print(os.cpu_count())"
 seed: 42
 train_split: 0.8
 
 # Model Configuration
 use_cnn: True
-input_dim: 784
-image_dim: 28
+input_dim: 784 # only needed for dense network
+image_dim: 28  # only for test evaluation
 num_channels: 1
 num_classes: 3
 

@@ -32,7 +32,7 @@ class MappedSubset(Dataset):
 def get_dataloaders(data_dir: str = "data") -> Tuple[DataLoader, DataLoader, DataLoader]:
     # === Load Config ===
     config = load_config()
-    num_workers = config["num_workers"]
+    num_cores = config["num_cores"]
     batch_size = config["batch_size"]
     train_split = config["train_split"]
     target_labels = config["target_labels"]
@@ -40,6 +40,9 @@ def get_dataloaders(data_dir: str = "data") -> Tuple[DataLoader, DataLoader, Dat
 
     # === Reproducibility ===
     set_seed(seed)
+
+    # === Set number of workers ===
+    num_workers = min(2 * num_cores, batch_size)
 
     # === Load Dataset ===
     mnist_dataset = datasets.MNIST(root=data_dir, train=True, download=True, transform=data_transform)
