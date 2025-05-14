@@ -11,11 +11,11 @@ pytest tests/
 
 
 # Download data
-python src/digit_classification/cli.py download-data 
+digit-classification download-data 
 --data-dir data/
 
 # Train model
-python src/digit_classification/cli.py train \
+digit-classification train \
 --data-dir data/  \
 --output-dir checkpoints 
 --epochs 20
@@ -26,7 +26,7 @@ python src/digit_classification/cli.py train \
 </figure>
 
 # Evaluate model
-python src/digit_classification/cli.py evaluate \
+digit-classification evaluate \
 --data-dir data/ \
 --checkpoint-path checkpoints/lightning_logs/version_3/
 
@@ -36,7 +36,7 @@ python src/digit_classification/cli.py evaluate \
 </figure>
 
 # Predict
-python src/digit_classification/cli.py predict \
+digit-classification predict \
 --checkpoint-path checkpoints/lightning_logs/version_3/ \
 --input-path images/test.png
 
