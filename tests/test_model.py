@@ -20,3 +20,4 @@ def test_train_model_runs():
     output_dir = Path(config["output_dir"])
     contents = list(output_dir.glob("**/*"))
     assert any("ckpt" in str(p) for p in contents), "No checkpoint file saved"
+

@@ -18,7 +18,11 @@ def test_model_forward_pass():
                             use_cnn=use_cnn)
 
     # === Create fake input and check output shape ===
-    fake_input = torch.randn(batch_size, num_channels, image_dim, image_dim)
+    if use_cnn:
+        fake_input = torch.randn(batch_size, num_channels, image_dim, image_dim)
+    else:
+        fake_input = torch.randn(batch_size, input_dim)
+
     output = model(fake_input)
 
     assert output.shape == (batch_size, num_classes), (f"Mismatch: Output shape should be [batch_size, num_classes],"
